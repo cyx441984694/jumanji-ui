@@ -1,10 +1,11 @@
 import logo from './logo.svg';
 
-import React from 'react';
+import React,{useState} from 'react';
 import './index.css';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, MenuProps, Flex } from 'antd';
+import { Button, MenuProps, Flex, Table, Input } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import TableComponent from "./TableComponent.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -22,11 +23,11 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined].map(
       icon: React.createElement(icon),
       label: `workflow ${key}`,
 
-      children: new Array(2).fill(null).map((_, j) => {
-        const subKey = index * 2 + j +1;
+      children: new Array(1).fill(null).map((_, j) => {
+        const subKey = index * 1 + j +1;
         return {
           key: subKey,
-          label: `option${subKey}`,
+          label: `playbook${subKey}`,
         };
       }),
     };
@@ -34,6 +35,8 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined].map(
 );
 
 const App: React.FC = () => {
+  const [data, setData] = useState([]);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -49,7 +52,6 @@ const App: React.FC = () => {
           <Breadcrumb.Item>Home</Breadcrumb.Item>
           <Breadcrumb.Item>Apps</Breadcrumb.Item>
         </Breadcrumb>
-
         <Layout style={{ padding: '24px 0', background: colorBgContainer }}>
           <Sider style={{ background: colorBgContainer }} width={200}>
             <Menu
@@ -60,10 +62,12 @@ const App: React.FC = () => {
               items={items2}
             />
           </Sider>
-          <Content style={{ padding: '0 24px', minHeight: "85vh" }}>Content</Content>
-          <Flex gap="small" wrap="wrap">
-            <Button type="primary">Add task</Button>
-          </Flex>
+          <Content style={{ padding: '0 24px', minHeight: "85vh" }}>
+          <div>
+          <TableComponent/>
+          </div>
+          </Content>
+          <Flex gap="small" wrap="wrap" style={{ padding: '0 30px'}}></Flex>
         </Layout>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
