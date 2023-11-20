@@ -8,6 +8,7 @@ const EditableContext = React.createContext<FormInstance<any>|null>(null);
 
 interface Item {
   key: string;
+  name: string;
   stage: string;
   task: string;
   plugin: string;
@@ -102,6 +103,7 @@ type EditableTableProps = Parameters<typeof Table>[0];
 
 interface DataType {
   key: React.Key;
+  name: string;
   stage: string;
   task: string;
   plugin: string;
@@ -113,6 +115,7 @@ const TableComponent: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
       key: '0',
+      name: 'webhook',
       stage: 'stage1',
       task: 'task1',
       plugin: 'jenkins',
@@ -127,6 +130,12 @@ const TableComponent: React.FC = () => {
   };
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
+    {
+      title: 'name',
+      dataIndex: 'name',
+      width: '30%',
+      editable: true,
+    },
     {
       title: 'stage',
       dataIndex: 'stage',
@@ -160,9 +169,10 @@ const TableComponent: React.FC = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
+      name: 'webhook',
       stage: 'stage1',
       task: 'task1',
-      plugin: 'command',
+      plugin: 'plugin',
     };
     setDataSource([...dataSource, newData]);
     setCount(count + 1);

@@ -5,34 +5,14 @@ import './index.css';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, MenuProps, Flex, Table, Input } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Icon } from '@ant-design/compatible';
+// import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
+
 import TableComponent from "./TableComponent.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const items1: MenuProps['items'] = ['1'].map((key) => ({
-  key,
-  label: `Controller`,
-}));
-
-const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined].map(
-  (icon, index) => {
-    const key = String(index + 1);
-
-    return {
-      key: `sub${key}`,
-      icon: React.createElement(icon),
-      label: `workflow ${key}`,
-
-      children: new Array(1).fill(null).map((_, j) => {
-        const subKey = index * 1 + j +1;
-        return {
-          key: subKey,
-          label: `playbook${subKey}`,
-        };
-      }),
-    };
-  },
-);
 
 const App: React.FC = () => {
   const [data, setData] = useState([]);
@@ -45,7 +25,6 @@ const App: React.FC = () => {
     <Layout>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
         <div className="demo-logo" />
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} />
       </Header>
       <Content style={{ padding: '0 50px' }}>
         <Breadcrumb style={{ margin: '16px 0' }}>
@@ -54,13 +33,14 @@ const App: React.FC = () => {
         </Breadcrumb>
         <Layout style={{ padding: '24px 0', background: colorBgContainer }}>
           <Sider style={{ background: colorBgContainer }} width={200}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={['1']}
-              defaultOpenKeys={['sub1']}
-              style={{ height: '100%' }}
-              items={items2}
-            />
+            <Menu mode="inline" defaultSelectedKeys={['1']} defaultOpenKeys={['sub1']} style={{ height: '100%' }}>
+                    <Menu.Item key="1" ><Icon type="desktop" /><span> Home </span></Menu.Item>
+                    <Menu.SubMenu key="submenu" title={<span><Icon type="pie-chart" />&nbsp;&nbsp;&nbsp;Pipeline </span>}> 
+                      <Menu.Item key="3"><span>Template</span></Menu.Item>
+                      <Menu.Item key="4"><span>Run</span></Menu.Item>
+                    </Menu.SubMenu>
+                    <Menu.Item key="5" ><Icon type="coffee" /><span> Setting </span></Menu.Item>
+            </Menu>
           </Sider>
           <Content style={{ padding: '0 24px', minHeight: "85vh" }}>
           <div>
