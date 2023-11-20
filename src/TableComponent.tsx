@@ -133,25 +133,25 @@ const TableComponent: React.FC = () => {
     {
       title: 'name',
       dataIndex: 'name',
-      width: '30%',
+      width: '20%',
       editable: true,
     },
     {
       title: 'stage',
       dataIndex: 'stage',
-      width: '30%',
+      width: '20%',
       editable: true,
     },
     {
       title: 'task',
       dataIndex: 'task',
-      width: '30%',
+      width: '20%',
       editable: true,
     },
     {
       title: 'plugin',
       dataIndex: 'plugin',
-      width: '30%',
+      width: '20%',
       editable: true,
     },
     {
