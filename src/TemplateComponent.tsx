@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import './index.css';
-import type { InputRef } from 'antd';
-import { Button, Form, Input, Popconfirm, Table } from 'antd';
+import { Drawer, InputRef } from 'antd';
+import { Button, Form, Input, Popconfirm, Select, Table,Flex, Row, Col } from 'antd';
 import type { FormInstance } from 'antd/es/form';
+import Setting from './Setting';
+
 
 const EditableContext = React.createContext<FormInstance<any>|null>(null);
-
+const { Option } = Select;
 interface Item {
   key: string;
   name: string;
@@ -95,7 +97,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
       </div>
     );
   }
-
   return <td {...restProps}>{childNode}</td>;
 };
 
@@ -124,44 +125,113 @@ const TableComponent: React.FC = () => {
 
   const [count, setCount] = useState(2);
 
+
+
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
   };
 
+  const handleSelectChange = (value,index) => {
+    const newData = [...dataSource];
+    newData[index].plugin = value;
+    setDataSource(newData);
+  }
+
+  const plugins = [
+        {label: 'jenkins', value: 'jenkins'},
+        {label: 'command', value: 'command'},
+        {label: 'github', value: 'github'}
+  ];
+
+
+  // drawer Setting  
+  const [visible, setVisible] = useState(false);
+
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
-      title: 'name',
+      title: 'Name',
       dataIndex: 'name',
       width: '20%',
       editable: true,
     },
     {
-      title: 'stage',
+      title: 'Stage',
       dataIndex: 'stage',
       width: '20%',
       editable: true,
     },
     {
-      title: 'task',
+      title: 'Task',
       dataIndex: 'task',
       width: '20%',
       editable: true,
     },
     {
-      title: 'plugin',
+      title: 'Plugin',
       dataIndex: 'plugin',
       width: '20%',
-      editable: true,
+      render: (plugin, record, index) =>(
+        <Select value={plugin} onChange={(value) => handleSelectChange(value,index)}>
+          {plugins.map((item)=>
+          <Option value={item.value} key={index}>{item.label}</Option>
+          )}
+        </Select>
+      )
     },
     {
-      title: 'operation',
+      title: 'Operation',
       dataIndex: 'operation',
       render: (_, record: { key: React.Key }) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
+          <div>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}><a>Delete</a></Popconfirm>
+          {/* reference: https://codesandbox.io/p/sandbox/submit-form-in-drawer-antd-5-11-4-ws45d4?file=%2Fdemo.tsx */}
+          <Button type="text" onClick={()=>{setVisible(true);}}>Configure</Button>
+          <Drawer width={800} title="Configure" placement="right" visible={visible} closable={false} onClose={()=> {setVisible(false)}}>
+          <Form layout="vertical" hideRequiredMark>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="Credential"
+                    label="Credential"
+                    rules={[{ required: true, message: 'Please select credential' }]}
+                  >
+                    <Select placeholder="Please select credential">
+                      <Option value="winnie">Winnie Chen</Option>
+                      <Option value="sa">Service account</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="Configuration"
+                    label="Configuration"
+                    rules={[{ required: true, message: 'Please enter its configuration link' }]}
+                  >
+                    <Input placeholder="Please enter its configuration link"/>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name="description"
+                    label="Description"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'please enter description',
+                      },
+                    ]}
+                  >
+                    <Input.TextArea rows={4} placeholder="please enter description" />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Drawer>
+          </div>
         ) : null,
     },
   ];
@@ -214,9 +284,12 @@ const TableComponent: React.FC = () => {
 
   return (
     <div>
-      <Button onClick={handleAdd} type="primary" style={{ float: 'right' }}>
-        Add task
-      </Button>
+      <Flex gap="small" wrap = "wrap" style={{ float: 'right' }}>
+      <Button onClick={handleAdd} type="primary" > Add task </Button>
+      <Button > Run </Button>
+      <Button > Schedule </Button>
+      </Flex>
+      <br></br>
       <Table
         components={components}
         rowClassName={() => 'editable-row'}
