@@ -3,7 +3,6 @@ import './index.css';
 import { Drawer, InputRef } from 'antd';
 import { Button, Form, Input, Popconfirm, Select, Table,Flex, Row, Col } from 'antd';
 import type { FormInstance } from 'antd/es/form';
-import Setting from './Setting';
 
 
 const EditableContext = React.createContext<FormInstance<any>|null>(null);
@@ -115,7 +114,7 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 const TableComponent: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
-      key: '0',
+      key: '1',
       name: 'webhook',
       stage: 'stage1',
       task: 'task1',
@@ -125,13 +124,12 @@ const TableComponent: React.FC = () => {
 
   const [count, setCount] = useState(2);
 
-
-
   const handleDelete = (key: React.Key) => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
   };
 
+  // select option in row
   const handleSelectChange = (value,index) => {
     const newData = [...dataSource];
     newData[index].plugin = value;
@@ -147,6 +145,42 @@ const TableComponent: React.FC = () => {
 
   // drawer Setting  
   const [visible, setVisible] = useState(false);
+
+  // drag
+  const onRow = (state:any, setState:any) => ({
+    draggable: true,
+    style: { cursor: 'move' },
+    onDragStart: (ev:any) => {
+      ev.dataTransfer.effectAllowed = "move";
+      ev.dataTransfer.setData('text', ev.target.getAttribute('data-row-key'));
+    },
+    onDragEnter: (ev:any) => {
+      const nodes = ev.target.parentNode.childNodes;
+      nodes.forEach((item:any) => item.style.borderTop = '2px dashed #1890ff');
+    },
+    onDragLeave: (ev:any) => {
+      const nodes = ev.target.parentNode.childNodes;
+      nodes.forEach((item:any) => item.style.borderTop = '');
+    },
+    onDrop: (ev:any) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const dragId = Number(ev.dataTransfer.getData('text'));
+      const dropCol = ev.target.tagName !== 'TR' ? ev.target.parentNode : ev.target;
+      const dropId = Number(dropCol.getAttribute('data-row-key'));
+      console.log("dragId>>>>>", dragId, "dropId>>>>>", dropId, state);
+      const dragIndex = state.findIndex((item:any) => Number(item.key) === dragId); 
+      const dropIndex = state.findIndex((item:any) => Number(item.key) === dropId);
+      const data = [...state];
+      console.log("dragIndex>>>>>", dragIndex, "dropIndex>>>>>", dropIndex);
+      const item = data.splice(dragIndex, 1); 
+      data.splice(dropIndex, 0, item[0]); 
+      setState(data);
+      dropCol.childNodes.forEach((item:any) => item.style.borderTop = '');
+    },
+    onDragOver: (ev:any) => ev.preventDefault(),
+});
+
 
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
@@ -291,12 +325,13 @@ const TableComponent: React.FC = () => {
       </Flex>
       <br></br>
       <Table
-        components={components}
-        rowClassName={() => 'editable-row'}
-        bordered
-        dataSource={dataSource}
-        columns={columns as ColumnTypes}
-      />
+            rowKey="key"
+            components={components}
+            bordered
+            dataSource={dataSource}
+            columns={columns as ColumnTypes}
+            onRow={() => onRow(dataSource, setDataSource)}
+          />
     </div>
   );
 };
